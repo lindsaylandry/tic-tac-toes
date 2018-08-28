@@ -7,5 +7,6 @@ import (
 func main() {
   t := src.New()
 
-  t.PrintBoard()
+  err := t.PlayGame()
+	if err != nil { panic(err) }
 }

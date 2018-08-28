@@ -2,6 +2,10 @@ package src
 
 import (
   "fmt"
+	"os"
+  "strconv"
+	"bufio"
+	"strings"
 )
 
 type TicTacToe struct {
@@ -14,6 +18,17 @@ func New() TicTacToe {
   }
 
   return t
+}
+
+func (t *TicTacToe) PlayGame() error {
+	for t.isOver() == false && t.isWinner() == false {
+		t.PrintBoard()
+		err := t.PlayerChoose()
+		if err != nil { return err}
+	}
+
+	fmt.Println("GAME OVER")
+	return nil
 }
 
 func (t *TicTacToe) PrintBoard() {
@@ -32,6 +47,30 @@ func (t *TicTacToe) PrintBoard() {
   fmt.Printf("\n")
 }
 
-func (t *TicTacToe) PlayerChoose() {
+func (t *TicTacToe) PlayerChoose() error {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter value: ")
+  text, _ := reader.ReadString('\n')
+	n, err := strconv.Atoi(strings.TrimSuffix(text, "\n"))
+  if err != nil { return err }
 
+	t.Board[n] = 1
+
+	return nil
+}
+
+func (t *TicTacToe) isOver() bool {
+	isDone := true
+	for i, _ := range t.Board {
+		if i == 0 {
+			isDone = false
+			break
+		}
+	}
+
+	return isDone
+}
+
+func (t *TicTacToe) isWinner() bool {
+	return false
 }
