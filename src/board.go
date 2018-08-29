@@ -6,7 +6,6 @@ import (
   "strconv"
 	"bufio"
 	"strings"
-  "reflect"
 )
 
 type TicTacToe struct {
@@ -138,29 +137,28 @@ func (t *TicTacToe) isWinner(isPlayer bool) bool {
   }
   c := [len(t.Winners)][len(t.Winners[0])]bool{}
 
-  for n, _ := range t.Board {
+  for n, l := range t.Board {
     for m, k := range t.Winners {
-      for o, l := range k {
-        if o == n && l == i {
+      for o, v := range k {
+        if v == n+1 && l == i {
           c[m][o] = true
         }
       }
     }
   }
-  //fmt.Println(c)
 
   wins := make([]bool, len(t.Winners[0]))
   for z, _ := range wins {
     wins[z] = true
   }
-  //fmt.Println(wins)
 
-  winner := false
+  var winner bool
   for _, y := range c {
-    if reflect.DeepEqual(y, wins) {
-      winner = true
-      break
+    winner = true
+    for _, x := range y {
+      if x == false { winner = false }
     }
+    if winner == true {break}
   }
 
 	return winner
