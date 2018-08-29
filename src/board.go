@@ -32,7 +32,7 @@ func New() TicTacToe {
 }
 
 func (t *TicTacToe) PlayGame() error {
-	for !t.isOver() && !t.isWinner(false) {
+	for !t.isOver() && !t.isWinner() {
     // player goes
 		t.PrintBoard()
     playerChose := false
@@ -41,15 +41,17 @@ func (t *TicTacToe) PlayGame() error {
     }
 
     // computer goes
-    if !t.isOver() && !t.isWinner(true) {
+    if !t.isOver() && !t.isWinner() {
       t.ComputerChoose()
-      if t.isWinner(false) {
+      if t.isWinner() {
         t.PrintBoard()
         fmt.Println("Computer wins!")
+        return nil
       }
-    } else if t.isWinner(true) {
+    } else if t.isWinner() {
       t.PrintBoard()
       fmt.Println("Player wins!")
+      return nil
     }
 	}
 
@@ -128,35 +130,25 @@ func (t *TicTacToe) isOver() bool {
 	return isDone
 }
 
-func (t *TicTacToe) isWinner(isPlayer bool) bool {
-  var i int
-  if isPlayer {
-    i = 1
-  } else {
-    i = 2
-  }
-  c := [len(t.Winners)][len(t.Winners[0])]bool{}
+func (t *TicTacToe) isWinner() bool {
+  c := [len(t.Winners)][len(t.Winners[0])]int{}
 
   for n, l := range t.Board {
     for m, k := range t.Winners {
       for o, v := range k {
-        if v == n+1 && l == i {
-          c[m][o] = true
+        if v == n+1 {
+          c[m][o] = l
         }
       }
     }
   }
 
-  wins := make([]bool, len(t.Winners[0]))
-  for z, _ := range wins {
-    wins[z] = true
-  }
-
   var winner bool
   for _, y := range c {
     winner = true
+    thing := y[0]
     for _, x := range y {
-      if x == false { winner = false }
+      if x != thing || x == 0 { winner = false }
     }
     if winner == true {break}
   }
