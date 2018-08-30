@@ -11,11 +11,12 @@ import (
 type TicTacToe struct {
   Board [9]int
   Winners [8][3]int
+  WinnerList [8][3]int
 }
 
 func New() TicTacToe {
   t := TicTacToe{
-    Board: [9]int{0, 0, 0, 0, 0, 0, 0, 0, 0},
+    Board: [9]int{},
     Winners: [8][3]int{
       {1,2,3},
       {4,5,6},
@@ -26,6 +27,7 @@ func New() TicTacToe {
       {1,5,9},
       {3,5,7},
     },
+    WinnerList: [8][3]int{},
   }
 
   return t
@@ -99,18 +101,28 @@ func (t *TicTacToe) PlayerChoose() bool {
     return false
   }
 	t.Board[n-1] = 1
+  t.updateWinnerBoard(n-1, 1)
 	return true
 }
 
 func (t *TicTacToe) ComputerChoose() error {
   computerChose := false
-  for n, i := range t.Board {
-    if i == 0 {
-      t.Board[n] = 2
-      computerChose = true
-      break
+
+  if t.Board[4] == 0 {
+    computerChose = true
+    t.Board[4] = 2
+    t.updateWinnerBoard(4, 2)
+  } else {
+    for n, i := range t.Board {
+      if i == 0 {
+        t.Board[n] = 2
+        computerChose = true
+        t.updateWinnerBoard(n, 2)
+        break
+      }
     }
   }
+
   if !computerChose {
     return fmt.Errorf("no choices for computer abort")
   }
@@ -130,21 +142,19 @@ func (t *TicTacToe) isOver() bool {
 	return isDone
 }
 
-func (t *TicTacToe) isWinner() bool {
-  c := [len(t.Winners)][len(t.Winners[0])]int{}
-
-  for n, l := range t.Board {
-    for m, k := range t.Winners {
-      for o, v := range k {
-        if v == n+1 {
-          c[m][o] = l
-        }
+func (t *TicTacToe) updateWinnerBoard(a int, l int) {
+  for m, k := range t.Winners {
+    for o, v := range k {
+      if v == a+1 {
+        t.WinnerList[m][o] = l
       }
     }
   }
+}
 
+func (t *TicTacToe) isWinner() bool {
   var winner bool
-  for _, y := range c {
+  for _, y := range t.WinnerList {
     winner = true
     thing := y[0]
     for _, x := range y {
